@@ -1,0 +1,11 @@
+# Binaries
+xuman-demo
+content-to-booking
+
+# Environment
+.env
+
+# Go build cache
+*.test
+*.out
+AGENTS.md

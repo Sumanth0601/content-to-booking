@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Content to Booking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen font-sans">
+
+    <header class="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-sm">C</span>
+        </div>
+        <h1 class="text-xl font-semibold text-gray-900">Content to Booking</h1>
+        <span class="text-sm text-gray-500 ml-1">— Turn content into bookable service listings + AI Growth Coach</span>
+    </header>
+
+    <!-- Tabs -->
+    <div class="max-w-3xl mx-auto mt-8 px-4">
+        <div class="flex border-b border-gray-200 mb-8">
+            <button id="tab-listing" onclick="switchTab('listing')"
+                class="tab-btn px-5 py-2.5 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600">
+                Generate Listing
+            </button>
+            <button id="tab-coach" onclick="switchTab('coach')"
+                class="tab-btn px-5 py-2.5 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700">
+                Growth Coach
+            </button>
+        </div>
+
+        <!-- ── Tab 1: Generate Listing ── -->
+        <div id="panel-listing">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-1">Content → Service Listing</h2>
+                <p class="text-sm text-gray-500 mb-5">Paste a social caption, bio, or service description. Get a
+                    ready-to-publish listing in seconds.</p>
+
+                <textarea id="listing-input" rows="5"
+                    class="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
+                    placeholder="e.g. ✨ 1:1 yoga sessions for beginners and busy professionals. I help you build a consistent practice that actually fits your life. DM to book your first session — sliding scale available 🙏"></textarea>
+
+                <button onclick="generateListing()"
+                    class="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
+                    Generate My Listing
+                </button>
+
+                <div id="listing-loading" class="hidden mt-6 flex items-center gap-2 text-sm text-gray-500">
+                    <svg class="animate-spin h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    Generating…
+                </div>
+                <div id="listing-error" class="hidden mt-4 text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3"></div>
+                <div id="listing-result" class="hidden mt-6"></div>
+            </div>
+        </div>
+
+        <!-- ── Tab 2: Growth Coach ── -->
+        <div id="panel-coach" class="hidden">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 class="text-lg font-semibold text-gray-900 mb-1">AI Growth Coach</h2>
+                <p class="text-sm text-gray-500 mb-5">Enter your performance data and get specific, prioritized
+                    recommendations.</p>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Category</label>
+                        <select id="coach-category"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="">Select…</option>
+                            <option>Wellness</option>
+                            <option>Fitness</option>
+                            <option>Education</option>
+                            <option>Coaching</option>
+                            <option>Music</option>
+                            <option>Art</option>
+                            <option>Other</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Sessions Completed</label>
+                        <input id="coach-sessions" type="number" min="0" placeholder="e.g. 42"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Avg Star Rating (1–5)</label>
+                        <input id="coach-rating" type="number" min="1" max="5" step="0.1" placeholder="e.g. 4.2"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Cancellation Rate (%)</label>
+                        <input id="coach-cancel" type="number" min="0" max="100" step="0.1" placeholder="e.g. 18"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Avg Response Time (min)</label>
+                        <input id="coach-response" type="number" min="0" placeholder="e.g. 90"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Content Posts (last 30 days)</label>
+                        <input id="coach-posts" type="number" min="0" placeholder="e.g. 3"
+                            class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+                    </div>
+                </div>
+
+                <button onclick="getGrowthPlan()"
+                    class="mt-5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition-colors">
+                    Get My Growth Plan
+                </button>
+
+                <div id="coach-loading" class="hidden mt-6 flex items-center gap-2 text-sm text-gray-500">
+                    <svg class="animate-spin h-4 w-4 text-indigo-500" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                    </svg>
+                    Analyzing…
+                </div>
+                <div id="coach-error" class="hidden mt-4 text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3"></div>
+                <div id="coach-result" class="hidden mt-6"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.getElementById('panel-listing').classList.toggle('hidden', tab !== 'listing');
+            document.getElementById('panel-coach').classList.toggle('hidden', tab !== 'coach');
+            document.getElementById('tab-listing').className = tab === 'listing'
+                ? 'tab-btn px-5 py-2.5 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600'
+                : 'tab-btn px-5 py-2.5 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700';
+            document.getElementById('tab-coach').className = tab === 'coach'
+                ? 'tab-btn px-5 py-2.5 text-sm font-medium text-indigo-600 border-b-2 border-indigo-600'
+                : 'tab-btn px-5 py-2.5 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700';
+        }
+
+        async function generateListing() {
+            const content = document.getElementById('listing-input').value.trim();
+            if (!content) return;
+
+            setLoading('listing', true);
+            clearResult('listing');
+
+            try {
+                const res = await fetch('/api/generate-listing', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ content }),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Unknown error');
+                renderListing(data);
+            } catch (e) {
+                showError('listing', e.message);
+            } finally {
+                setLoading('listing', false);
+            }
+        }
+
+        function renderListing(d) {
+            const el = document.getElementById('listing-result');
+            el.innerHTML = `
+        <div class="border border-indigo-100 bg-indigo-50 rounded-xl p-5 space-y-3">
+          <div class="flex items-start justify-between gap-4">
+            <h3 class="text-base font-semibold text-gray-900">${esc(d.title)}</h3>
+            <span class="shrink-0 bg-indigo-100 text-indigo-700 text-xs font-medium px-2.5 py-1 rounded-full">${esc(d.category)}</span>
+          </div>
+          <p class="text-sm text-gray-700">${esc(d.description)}</p>
+          <div class="flex flex-wrap gap-3 text-sm text-gray-600">
+            <span>⏱ ${d.duration_minutes} min</span>
+            <span>💵 $${d.price_usd}</span>
+          </div>
+          <div class="flex flex-wrap gap-1.5">
+            ${(d.tags || []).map(t => `<span class="bg-white border border-gray-200 text-xs text-gray-600 px-2 py-0.5 rounded-full">${esc(t)}</span>`).join('')}
+          </div>
+          <div class="mt-1 bg-white rounded-lg border border-indigo-200 px-4 py-2 text-sm font-medium text-indigo-700">
+            📣 ${esc(d.call_to_action)}
+          </div>
+        </div>`;
+            el.classList.remove('hidden');
+        }
+
+        async function getGrowthPlan() {
+            const category = document.getElementById('coach-category').value;
+            if (!category) { showError('coach', 'Please select a category.'); return; }
+
+            const payload = {
+                category,
+                sessions_completed: parseInt(document.getElementById('coach-sessions').value) || 0,
+                avg_star_rating: parseFloat(document.getElementById('coach-rating').value) || 0,
+                cancellation_rate_pct: parseFloat(document.getElementById('coach-cancel').value) || 0,
+                avg_response_time_minutes: parseInt(document.getElementById('coach-response').value) || 0,
+                content_posts_last_30_days: parseInt(document.getElementById('coach-posts').value) || 0,
+            };
+
+            setLoading('coach', true);
+            clearResult('coach');
+
+            try {
+                const res = await fetch('/api/growth-coach', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                });
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || 'Unknown error');
+                renderCoaching(data);
+            } catch (e) {
+                showError('coach', e.message);
+            } finally {
+                setLoading('coach', false);
+            }
+        }
+
+        function renderCoaching(d) {
+            const el = document.getElementById('coach-result');
+            const tips = (d.tips || []).map(t => `
+        <div class="border border-gray-200 rounded-xl p-4 space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 bg-indigo-600 text-white text-xs font-bold rounded-full flex items-center justify-center">${t.priority}</span>
+            <h4 class="font-medium text-gray-900 text-sm">${esc(t.title)}</h4>
+          </div>
+          <p class="text-sm text-gray-600">${esc(t.explanation)}</p>
+          <div class="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-sm text-amber-800">
+            <span class="font-medium">Action:</span> ${esc(t.action)}
+          </div>
+        </div>`).join('');
+
+            el.innerHTML = `
+        <div class="space-y-4">
+          <p class="text-sm text-gray-600 bg-gray-100 rounded-lg px-4 py-3">${esc(d.provider_summary)}</p>
+          ${tips}
+        </div>`;
+            el.classList.remove('hidden');
+        }
+
+        function esc(s) {
+            return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+        function setLoading(tab, on) {
+            document.getElementById(`${tab}-loading`).classList.toggle('hidden', !on);
+        }
+        function clearResult(tab) {
+            document.getElementById(`${tab}-error`).classList.add('hidden');
+            document.getElementById(`${tab}-result`).classList.add('hidden');
+        }
+        function showError(tab, msg) {
+            const el = document.getElementById(`${tab}-error`);
+            el.textContent = msg;
+            el.classList.remove('hidden');
+        }
+    </script>
+</body>
+
+</html>
